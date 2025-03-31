@@ -1,28 +1,62 @@
 name: scanning sast, sca
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  analyze:
+  sonarcloud-scan:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: '16.x'
+        node-version: '20.x'
     
-    - run: npm install
+    - name: Install dependencies
+      run: npm install
     
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: 9ffed23ddbfc11be702fdf38b1efaca366ba439e
+      with:
+       args: >
+          -Dsonar.projectKey=reactapp02
+          -Dsonar.projectName=React-projects-for-beginners
+          -Dsonar.sources=.
+          -Dsonar.exclusions=**/node_modules/**,**/*.css,**/*.svg
     
-    - name: Snyk Security Scan
+  snyk-scan:
+    needs: sonarcloud-scan
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Run Snyk test
       uses: snyk/actions/node@master
       continue-on-error: true
+      with:
+        command: test
+        args: --all-projects
       env:
         SNYK_TOKEN: bb6abd5b-17cb-4c95-892e-9c8243e9777c
+    - name: Upload Snyk results
+      uses: actions/upload-artifact@v4  
+      if: always()
+      with:
+        name: snyk-results
+        path: snyk-report.html 
