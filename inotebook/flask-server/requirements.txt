@@ -3,3 +3,4 @@ Flask-CORS==3.0.10
 pymongo==4.3.3
 reportlab==3.6.12
 numpy==1.23.4
+werkzeug>=3.1.4 # not directly required, pinned by Snyk to avoid a vulnerability
