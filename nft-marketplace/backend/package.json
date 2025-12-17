@@ -10,8 +10,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@taquito/beacon-wallet": "^20.1.0",
-    "@taquito/taquito": "^20.1.0",
+    "@taquito/beacon-wallet": "^23.0.0",
+    "@taquito/taquito": "^23.0.0",
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
